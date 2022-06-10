@@ -5,12 +5,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import org.w3c.dom.Text
 import java.io.File
 import kotlin.collections.ArrayList
 import kotlin.math.abs
@@ -25,24 +23,17 @@ class GameScreen : AppCompatActivity() {
         // load high score
         val highScoreField = findViewById<TextView>(R.id.highScoreText)
 
-//        val path = this.getFilesDir()
         val highScoreFile = File(this.filesDir, "UserScore.txt")
 
         var highScore = -1
 
-        // first time playing game
+        // if first time playing game
         if(!highScoreFile.exists()) {
             highScoreFile.createNewFile()
             highScoreField.setText("High Score: 0")
         }
         else{
-            // read in high score
-//            this.openFileInput("UserScore.txt").bufferedReader().useLines { lines ->
-//                lines.fold("") {
-//                        some, text -> "$some\n$text"
-//                }
-//                Log.i("lines", lines.toString())
-
+            // read in from file
             this.openFileInput("UserScore.txt").use { stream ->
                 val text = stream.bufferedReader().use {
                     it.readText()
@@ -52,15 +43,9 @@ class GameScreen : AppCompatActivity() {
                 highScore = text.toInt()
                 highScoreField.setText("High Score: " + highScore.toString())
             }
-//
-//            }
-//            val test = File("UserScore.txt").inputStream().reader().use { it.readText() }
-//            Log.i("from high score file", test)
         }
 
 //        Log.i("file dir.", highScore.toString())
-
-        fun List<Int>.closestValue(value: Int) = minByOrNull { abs(value - it) }
 
         // square that changes color
         val square = findViewById<Button>(R.id.colorSquare)
@@ -121,9 +106,99 @@ class GameScreen : AppCompatActivity() {
         }
 //        Log.i("Check for size", colorValues.size.toString() + " " + colorNames.size.toString())
 
-//        var userClicked: Boolean
-
         // do it once to begin game
+        var colors = oneGameLoop(colorValues, colorNames, square)
+        var rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+
+        var score = 0
+
+        // changes as user gets right answers
+        val scoreField = findViewById<TextView>(R.id.scoreText)
+
+        // for debugging, set invisible for now
+        val colorDebugText = findViewById<TextView>(R.id.colorDebug)
+        colorDebugText.setText(rightChoice.toString())
+        colorDebugText.isVisible = false
+
+        option1.setOnClickListener{
+            if(rightChoice == 1)
+                score = score + 1
+            else
+                gameOver(score, highScore)
+
+            scoreField.setText("Score: " + score.toString())
+            colors = oneGameLoop(colorValues, colorNames, square)
+            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+
+//            Log.i("list of options", colors.toString())
+            colorDebugText.setText(colorNames[colors[0]])
+        }
+        option2.setOnClickListener{
+            if(rightChoice == 2)
+                score = score + 1
+            else
+                gameOver(score, highScore)
+
+            scoreField.setText("Score: " + score.toString())
+            colors = oneGameLoop(colorValues, colorNames, square)
+            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+
+//            Log.i("list of options", colors.toString())
+            colorDebugText.setText(colorNames[colors[0]])
+        }
+        option3.setOnClickListener{
+            if(rightChoice == 3)
+                score = score + 1
+            else
+                gameOver(score, highScore)
+
+            scoreField.setText("Score: " + score.toString())
+            colors = oneGameLoop(colorValues, colorNames, square)
+            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+
+//            Log.i("list of options", colors.toString())
+            colorDebugText.setText(colorNames[colors[0]])
+        }
+        option4.setOnClickListener{
+            if(rightChoice == 4)
+                score = score + 1
+            else
+                gameOver(score, highScore)
+
+            scoreField.setText("Score: " + score.toString())
+            colors = oneGameLoop(colorValues, colorNames, square)
+            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+
+//            Log.i("list of options", colors.toString())
+            colorDebugText.setText(colorNames[colors[0]])
+        }
+    }
+
+    fun getNewColor() : Int {
+        var red = (0..255).random()
+        var green = (0..255).random()
+        var blue = (0..255).random()
+        var color = Color.rgb(red, green, blue)
+//        Log.i("COLORS", color.toString())
+        return color
+    }
+
+    fun gameOver(curScore : Int, highScore : Int) {
+        if(curScore > highScore){
+            this.openFileOutput("UserScore.txt", Context.MODE_PRIVATE).use {
+                it.write(curScore.toString().toByteArray())
+            }
+        }
+
+        val intent = Intent(this, FinalScore::class.java)
+        intent.putExtra("Score", curScore.toString())
+        startActivity(intent)
+    }
+
+    fun oneGameLoop(colorValues: ArrayList<Int>, colorNames: ArrayList<String>, square: Button): ArrayList<Int> {
+
+        fun List<Int>.closestValue(value: Int) = minByOrNull { abs(value - it) }
+
         var newCol = getNewColor()
         var closestVal = colorValues.closestValue(newCol)
         if (closestVal != null) {
@@ -142,6 +217,7 @@ class GameScreen : AppCompatActivity() {
 
         // correct answer choice
         var rightAnswer = colorNames[indexOfClosest]
+        Log.i("user entry", "right answer was $rightAnswer")
 
         // contains indices of all options, including right answer
         var colors = ArrayList<Int>()
@@ -161,8 +237,18 @@ class GameScreen : AppCompatActivity() {
         }
 
 //        Log.i("list of options", colors.toString())
+        return colors
+    }
 
-        // which option box will contain the right answer
+    // set option choices to new colors
+    fun setOptions(
+        option1: Button,
+        option2: Button,
+        option3: Button,
+        option4: Button,
+        colorNames: ArrayList<String>,
+        colors: ArrayList<Int>
+    ): Int {
         var rightChoice = (1..4).random()
         when(rightChoice) {
             1 -> {
@@ -194,360 +280,6 @@ class GameScreen : AppCompatActivity() {
             }
         }
 
-
-        var score = 0
-
-        val scoreField = findViewById<TextView>(R.id.scoreText)
-
-        val colorDebugText = findViewById<TextView>(R.id.colorDebug)
-        colorDebugText.setText(rightChoice.toString())
-        colorDebugText.isVisible = false
-
-        option1.setOnClickListener{
-            Log.i("user entry", "user clicked 1 and the right answer was $rightAnswer")
-
-            if(rightChoice == 1)
-                score = score + 1
-            else {
-                gameOver(score, highScore)
-                val intent = Intent(this, FinalScore::class.java)
-                intent.putExtra("Score", score.toString())
-                startActivity(intent)
-            }
-
-
-            scoreField.setText("Score: " + score.toString())
-
-            newCol = getNewColor()
-            closestVal = colorValues.closestValue(newCol)
-            if (closestVal != null) {
-                square.setBackgroundColor(closestVal!!)
-            }
-//            Log.i("Check for nearest", "old val: $newCol closest val: $closestVal")
-
-            indexOfClosest = 0
-            for(i in 0 until colorNames.size)
-                if(colorValues[i] == closestVal)
-                    indexOfClosest = i
-
-//            Log.i("Color of closest", colorNames[indexOfClosest])
-//            Log.i("Index of right answer", indexOfClosest.toString())
-
-            rightAnswer = colorNames[indexOfClosest]
-
-            colors = ArrayList<Int>()
-            colors.add(indexOfClosest)
-
-            while(colors.size != 4){
-                var toAdd = colorValues.closestValue(getNewColor())
-
-                indexOfClosest = 0
-                for(i in 0 until colorNames.size)
-                    if(colorValues[i] == toAdd)
-                        indexOfClosest = i
-
-                if(!colors.contains(indexOfClosest))
-                    colors.add(indexOfClosest)
-            }
-
-//            Log.i("list of options", colors.toString())
-
-            rightChoice = (1..4).random()
-            when(rightChoice) {
-                1 -> {
-                    option1.setText(colorNames[colors[0]])
-                    option2.setText(colorNames[colors[1]])
-                    option3.setText(colorNames[colors[2]])
-                    option4.setText(colorNames[colors[3]])
-                }
-
-                2 -> {
-                    option1.setText(colorNames[colors[3]])
-                    option2.setText(colorNames[colors[0]])
-                    option3.setText(colorNames[colors[1]])
-                    option4.setText(colorNames[colors[2]])
-                }
-
-                3 -> {
-                    option1.setText(colorNames[colors[2]])
-                    option2.setText(colorNames[colors[3]])
-                    option3.setText(colorNames[colors[0]])
-                    option4.setText(colorNames[colors[1]])
-                }
-
-                4 -> {
-                    option1.setText(colorNames[colors[1]])
-                    option2.setText(colorNames[colors[2]])
-                    option3.setText(colorNames[colors[3]])
-                    option4.setText(colorNames[colors[0]])
-                }
-            }
-
-            colorDebugText.setText(colorNames[colors[0]])
-
-        }
-        option2.setOnClickListener{
-            Log.i("user entry", "user clicked 2 and the right answer was $rightAnswer")
-
-            if(rightChoice == 2)
-                score = score + 1
-            else {
-                gameOver(score, highScore)
-                val intent = Intent(this, FinalScore::class.java)
-                intent.putExtra("Score", score.toString())
-                startActivity(intent)
-            }
-
-            scoreField.setText("Score: " + score.toString())
-
-            newCol = getNewColor()
-            closestVal = colorValues.closestValue(newCol)
-            if (closestVal != null) {
-                square.setBackgroundColor(closestVal!!)
-            }
-//            Log.i("Check for nearest", "old val: $newCol closest val: $closestVal")
-
-            indexOfClosest = 0
-            for(i in 0 until colorNames.size)
-                if(colorValues[i] == closestVal)
-                    indexOfClosest = i
-
-//            Log.i("Color of closest", colorNames[indexOfClosest])
-//            Log.i("Index of right answer", indexOfClosest.toString())
-
-            rightAnswer = colorNames[indexOfClosest]
-
-            colors = ArrayList<Int>()
-            colors.add(indexOfClosest)
-
-            while(colors.size != 4){
-                var toAdd = colorValues.closestValue(getNewColor())
-
-                indexOfClosest = 0
-                for(i in 0 until colorNames.size)
-                    if(colorValues[i] == toAdd)
-                        indexOfClosest = i
-
-                if(!colors.contains(indexOfClosest))
-                    colors.add(indexOfClosest)
-            }
-
-//            Log.i("list of options", colors.toString())
-
-            rightChoice = (1..4).random()
-            when(rightChoice) {
-                1 -> {
-                    option1.setText(colorNames[colors[0]])
-                    option2.setText(colorNames[colors[1]])
-                    option3.setText(colorNames[colors[2]])
-                    option4.setText(colorNames[colors[3]])
-                }
-
-                2 -> {
-                    option1.setText(colorNames[colors[3]])
-                    option2.setText(colorNames[colors[0]])
-                    option3.setText(colorNames[colors[1]])
-                    option4.setText(colorNames[colors[2]])
-                }
-
-                3 -> {
-                    option1.setText(colorNames[colors[2]])
-                    option2.setText(colorNames[colors[3]])
-                    option3.setText(colorNames[colors[0]])
-                    option4.setText(colorNames[colors[1]])
-                }
-
-                4 -> {
-                    option1.setText(colorNames[colors[1]])
-                    option2.setText(colorNames[colors[2]])
-                    option3.setText(colorNames[colors[3]])
-                    option4.setText(colorNames[colors[0]])
-                }
-            }
-
-            colorDebugText.setText(colorNames[colors[0]])
-
-        }
-        option3.setOnClickListener{
-            Log.i("user entry", "user clicked 3 and the right answer was $rightAnswer")
-
-            if(rightChoice == 3)
-                score = score + 1
-            else {
-                gameOver(score, highScore)
-                val intent = Intent(this, FinalScore::class.java)
-                intent.putExtra("Score", score.toString())
-                startActivity(intent)
-            }
-
-            scoreField.setText("Score: " + score.toString())
-
-            newCol = getNewColor()
-            closestVal = colorValues.closestValue(newCol)
-            if (closestVal != null) {
-                square.setBackgroundColor(closestVal!!)
-            }
-//            Log.i("Check for nearest", "old val: $newCol closest val: $closestVal")
-
-            indexOfClosest = 0
-            for(i in 0 until colorNames.size)
-                if(colorValues[i] == closestVal)
-                    indexOfClosest = i
-
-//            Log.i("Color of closest", colorNames[indexOfClosest])
-//            Log.i("Index of right answer", indexOfClosest.toString())
-
-            rightAnswer = colorNames[indexOfClosest]
-
-            colors = ArrayList<Int>()
-            colors.add(indexOfClosest)
-
-            while(colors.size != 4){
-                var toAdd = colorValues.closestValue(getNewColor())
-
-                indexOfClosest = 0
-                for(i in 0 until colorNames.size)
-                    if(colorValues[i] == toAdd)
-                        indexOfClosest = i
-
-                if(!colors.contains(indexOfClosest))
-                    colors.add(indexOfClosest)
-            }
-
-//            Log.i("list of options", colors.toString())
-
-            rightChoice = (1..4).random()
-            when(rightChoice) {
-                1 -> {
-                    option1.setText(colorNames[colors[0]])
-                    option2.setText(colorNames[colors[1]])
-                    option3.setText(colorNames[colors[2]])
-                    option4.setText(colorNames[colors[3]])
-                }
-
-                2 -> {
-                    option1.setText(colorNames[colors[3]])
-                    option2.setText(colorNames[colors[0]])
-                    option3.setText(colorNames[colors[1]])
-                    option4.setText(colorNames[colors[2]])
-                }
-
-                3 -> {
-                    option1.setText(colorNames[colors[2]])
-                    option2.setText(colorNames[colors[3]])
-                    option3.setText(colorNames[colors[0]])
-                    option4.setText(colorNames[colors[1]])
-                }
-
-                4 -> {
-                    option1.setText(colorNames[colors[1]])
-                    option2.setText(colorNames[colors[2]])
-                    option3.setText(colorNames[colors[3]])
-                    option4.setText(colorNames[colors[0]])
-                }
-            }
-
-            colorDebugText.setText(colorNames[colors[0]])
-
-        }
-        option4.setOnClickListener{
-            Log.i("user entry", "user clicked 4 and the right answer was $rightAnswer")
-
-            if(rightChoice == 4)
-                score = score + 1
-            else {
-                gameOver(score, highScore)
-                val intent = Intent(this, FinalScore::class.java)
-                intent.putExtra("Score", score.toString())
-                startActivity(intent)
-            }
-
-            scoreField.setText("Score: " + score.toString())
-
-            newCol = getNewColor()
-            closestVal = colorValues.closestValue(newCol)
-            if (closestVal != null) {
-                square.setBackgroundColor(closestVal!!)
-            }
-//            Log.i("Check for nearest", "old val: $newCol closest val: $closestVal")
-
-            indexOfClosest = 0
-            for(i in 0 until colorNames.size)
-                if(colorValues[i] == closestVal)
-                    indexOfClosest = i
-
-//            Log.i("Color of closest", colorNames[indexOfClosest])
-//            Log.i("Index of right answer", indexOfClosest.toString())
-
-            rightAnswer = colorNames[indexOfClosest]
-
-            colors = ArrayList<Int>()
-            colors.add(indexOfClosest)
-
-            while(colors.size != 4){
-                var toAdd = colorValues.closestValue(getNewColor())
-
-                indexOfClosest = 0
-                for(i in 0 until colorNames.size)
-                    if(colorValues[i] == toAdd)
-                        indexOfClosest = i
-
-                if(!colors.contains(indexOfClosest))
-                    colors.add(indexOfClosest)
-            }
-
-//            Log.i("list of options", colors.toString())
-
-            rightChoice = (1..4).random()
-            when(rightChoice) {
-                1 -> {
-                    option1.setText(colorNames[colors[0]])
-                    option2.setText(colorNames[colors[1]])
-                    option3.setText(colorNames[colors[2]])
-                    option4.setText(colorNames[colors[3]])
-                }
-
-                2 -> {
-                    option1.setText(colorNames[colors[3]])
-                    option2.setText(colorNames[colors[0]])
-                    option3.setText(colorNames[colors[1]])
-                    option4.setText(colorNames[colors[2]])
-                }
-
-                3 -> {
-                    option1.setText(colorNames[colors[2]])
-                    option2.setText(colorNames[colors[3]])
-                    option3.setText(colorNames[colors[0]])
-                    option4.setText(colorNames[colors[1]])
-                }
-
-                4 -> {
-                    option1.setText(colorNames[colors[1]])
-                    option2.setText(colorNames[colors[2]])
-                    option3.setText(colorNames[colors[3]])
-                    option4.setText(colorNames[colors[0]])
-                }
-            }
-        }
-
-        colorDebugText.setText(colorNames[colors[0]])
-
-    }
-
-    fun getNewColor() : Int {
-        var red = (0..255).random()
-        var green = (0..255).random()
-        var blue = (0..255).random()
-        var color = Color.rgb(red, green, blue)
-//        Log.i("COLORS", color.toString())
-        return color
-    }
-
-    fun gameOver(curScore : Int, highScore : Int) {
-        if(curScore > highScore){
-            this.openFileOutput("UserScore.txt", Context.MODE_PRIVATE).use {
-                it.write(curScore.toString().toByteArray())
-            }
-        }
+        return rightChoice
     }
 }

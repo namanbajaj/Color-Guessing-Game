@@ -1,14 +1,26 @@
 package com.example.colorguessinggame
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Typeface
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val tText = findViewById<TextView>(R.id.titleText)
+
+        val title = "GUESS THE COLOR"
+
+        // set colors
+        tText.text = title
+
+        val t = Typeface.createFromAsset(assets, "crayons.ttf")
+        tText.typeface = t
 
         val easyGameButton = findViewById<Button>(R.id.easymodebutton)
         val hardGameButton = findViewById<Button>(R.id.hardmodebutton)

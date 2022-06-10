@@ -20,12 +20,28 @@ class GameScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_screen)
 
+        // what difficulty
+        val mode = intent.getStringExtra("Mode")
+
+        // Read in txt file of colors and their values
+        val file : String = if(mode == "Easy")
+            "colorsEasy.txt"
+        else {
+            "colorsHard.txt"
+        }
+
         // load high score
         val highScoreField = findViewById<TextView>(R.id.highScoreText)
 
-        val highScoreFile = File(this.filesDir, "UserScore.txt")
+        val highScoreFileName : String
+        if(mode == "Easy")
+            highScoreFileName = "UserScoreEasy.txt"
+        else
+            highScoreFileName = "UserScoreHard.txt"
 
-        var highScore = -1
+        val highScoreFile = File(this.filesDir, highScoreFileName)
+
+        var highScore = 0
 
         // if first time playing game
         if(!highScoreFile.exists()) {
@@ -34,7 +50,7 @@ class GameScreen : AppCompatActivity() {
         }
         else{
             // read in from file
-            this.openFileInput("UserScore.txt").use { stream ->
+            this.openFileInput(highScoreFileName).use { stream ->
                 val text = stream.bufferedReader().use {
                     it.readText()
                 }
@@ -57,15 +73,6 @@ class GameScreen : AppCompatActivity() {
         val option4 = findViewById<Button>(R.id.option4)
 
 
-        // what difficulty
-        val mode = intent.getStringExtra("Mode")
-
-        // Read in txt file of colors and their values
-        val file : String
-        if(mode == "Easy")
-            file = "colorsEasy.txt"
-        else
-            file = "colorsHard.txt"
         val bufferReader = application.assets.open(file).bufferedReader()
         val data = bufferReader.use {
             it.readText()
@@ -131,7 +138,7 @@ class GameScreen : AppCompatActivity() {
             if(rightChoice == 1)
                 score = score + 1
             else
-                gameOver(score, highScore)
+                gameOver(score, highScore, highScoreFileName)
 
             scoreField.setText("Score: " + score.toString())
             colors = oneGameLoop(colorValues, colorNames, square)
@@ -144,7 +151,7 @@ class GameScreen : AppCompatActivity() {
             if(rightChoice == 2)
                 score = score + 1
             else
-                gameOver(score, highScore)
+                gameOver(score, highScore, highScoreFileName)
 
             scoreField.setText("Score: " + score.toString())
             colors = oneGameLoop(colorValues, colorNames, square)
@@ -157,7 +164,7 @@ class GameScreen : AppCompatActivity() {
             if(rightChoice == 3)
                 score = score + 1
             else
-                gameOver(score, highScore)
+                gameOver(score, highScore, highScoreFileName)
 
             scoreField.setText("Score: " + score.toString())
             colors = oneGameLoop(colorValues, colorNames, square)
@@ -170,7 +177,7 @@ class GameScreen : AppCompatActivity() {
             if(rightChoice == 4)
                 score = score + 1
             else
-                gameOver(score, highScore)
+                gameOver(score, highScore, highScoreFileName)
 
             scoreField.setText("Score: " + score.toString())
             colors = oneGameLoop(colorValues, colorNames, square)
@@ -190,20 +197,24 @@ class GameScreen : AppCompatActivity() {
         return color
     }
 
-    fun gameOver(curScore : Int, highScore : Int) {
-        if(curScore > highScore){
-            this.openFileOutput("UserScore.txt", Context.MODE_PRIVATE).use {
-                it.write(curScore.toString().toByteArray())
-            }
-        }
-
+    fun gameOver(curScore: Int, highScore: Int, highScoreFileName: String) {
         val intent = Intent(this, FinalScore::class.java)
         intent.putExtra("Score", curScore.toString())
+
+        if(curScore > highScore){
+            this.openFileOutput(highScoreFileName, Context.MODE_PRIVATE).use {
+                it.write(curScore.toString().toByteArray())
+            }
+            intent.putExtra("Beat","true")
+        }
+
+        else
+            intent.putExtra("Beat","false")
+
         startActivity(intent)
     }
 
     fun oneGameLoop(colorValues: ArrayList<Int>, colorNames: ArrayList<String>, square: Button): ArrayList<Int> {
-
         fun List<Int>.closestValue(value: Int) = minByOrNull { abs(value - it) }
 
         var newCol = getNewColor()

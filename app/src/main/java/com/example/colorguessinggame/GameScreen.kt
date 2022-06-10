@@ -57,8 +57,15 @@ class GameScreen : AppCompatActivity() {
         val option4 = findViewById<Button>(R.id.option4)
 
 
+        // what difficulty
+        val mode = intent.getStringExtra("Mode")
+
         // Read in txt file of colors and their values
-        val file = "colors.txt"
+        val file : String
+        if(mode == "Easy")
+            file = "colorsEasy.txt"
+        else
+            file = "colorsHard.txt"
         val bufferReader = application.assets.open(file).bufferedReader()
         val data = bufferReader.use {
             it.readText()

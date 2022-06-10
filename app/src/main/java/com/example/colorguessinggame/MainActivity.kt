@@ -3,7 +3,6 @@ package com.example.colorguessinggame
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
@@ -11,9 +10,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val playGameButton = findViewById<Button>(R.id.playgamebutton)
-        playGameButton.setOnClickListener{
-            startActivity(Intent(this, GameScreen::class.java))
+        val easyGameButton = findViewById<Button>(R.id.easymodebutton)
+        val hardGameButton = findViewById<Button>(R.id.hardmodebutton)
+        easyGameButton.setOnClickListener{
+            val intent = Intent(this, GameScreen::class.java)
+            intent.putExtra("Mode", "Easy")
+            startActivity(intent)
+        }
+        hardGameButton.setOnClickListener{
+            val intent = Intent(this, GameScreen::class.java)
+            intent.putExtra("Mode", "Hard")
+            startActivity(intent)
         }
     }
 }

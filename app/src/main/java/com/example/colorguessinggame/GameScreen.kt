@@ -300,4 +300,8 @@ class GameScreen : AppCompatActivity() {
 
         return rightChoice
     }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this, MainActivity::class.java))
+    }
 }

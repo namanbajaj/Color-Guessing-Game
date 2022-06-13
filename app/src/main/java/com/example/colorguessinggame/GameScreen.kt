@@ -22,6 +22,7 @@ import kotlin.math.abs
 
 class GameScreen : AppCompatActivity() {
 
+    lateinit var rightAnswertoSend : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_screen)
@@ -149,16 +150,20 @@ class GameScreen : AppCompatActivity() {
 
         var timeLeft = 5
 
+        var wrongAnswerPressed = false
+
         option1.setOnClickListener{
             if(rightChoice == 1) {
-                score = score + 1
+                score += 1
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
             }
-            else
+            else {
                 gameOver(score, highScore, highScoreFileName)
+                wrongAnswerPressed = true
+            }
 
 
 //            Log.i("list of options", colors.toString())
@@ -166,14 +171,16 @@ class GameScreen : AppCompatActivity() {
         }
         option2.setOnClickListener{
             if(rightChoice == 2) {
-                score = score + 1
+                score += 1
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
             }
-            else
+            else {
                 gameOver(score, highScore, highScoreFileName)
+                wrongAnswerPressed = true
+            }
 
 
 //            Log.i("list of options", colors.toString())
@@ -181,14 +188,16 @@ class GameScreen : AppCompatActivity() {
         }
         option3.setOnClickListener{
             if(rightChoice == 3) {
-                score = score + 1
+                score += 1
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
             }
-            else
+            else {
                 gameOver(score, highScore, highScoreFileName)
+                wrongAnswerPressed = true
+            }
 
 
 //            Log.i("list of options", colors.toString())
@@ -196,14 +205,16 @@ class GameScreen : AppCompatActivity() {
         }
         option4.setOnClickListener{
             if(rightChoice == 4) {
-                score = score + 1
+                score += 1
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
             }
-            else
+            else {
                 gameOver(score, highScore, highScoreFileName)
+                wrongAnswerPressed = true
+            }
 
 //            Log.i("list of options", colors.toString())
             colorDebugText.setText(colorNames[colors[0]])
@@ -215,15 +226,17 @@ class GameScreen : AppCompatActivity() {
         if(mode == "Impossible"){
             timerField.text = timeLeft.toString()
             var job = lifecycleScope.launch {
-                while(true){
+                var timerValid = true
+                while(timerValid){
                     delay(1000)
                     timeLeft -= 1
                     timerField.text = timeLeft.toString()
+                    if(timeLeft == 0 && !wrongAnswerPressed) {
+                        Log.i("WRONG ANSWER", wrongAnswerPressed.toString())
+                        timerValid = false
+                        gameOver(score, highScore, highScoreFileName)
+                    }
                 }
-            }
-            if(timeLeft == 0){
-                job.cancel()
-                gameOver(score, highScore, highScoreFileName)
             }
         }
 
@@ -251,6 +264,7 @@ class GameScreen : AppCompatActivity() {
     fun gameOver(curScore: Int, highScore: Int, highScoreFileName: String) {
         val intent = Intent(this, FinalScore::class.java)
         intent.putExtra("Score", curScore.toString())
+        intent.putExtra("Right Answer", rightAnswertoSend)
 
         if(curScore > highScore){
             this.openFileOutput(highScoreFileName, Context.MODE_PRIVATE).use {
@@ -286,7 +300,8 @@ class GameScreen : AppCompatActivity() {
 
         // correct answer choice
         var rightAnswer = colorNames[indexOfClosest]
-        Log.i("user entry", "right answer was $rightAnswer")
+        Log.i("user entry", "right answer is $rightAnswer")
+        rightAnswertoSend = rightAnswer
 
         // contains indices of all options, including right answer
         var colors = ArrayList<Int>()

@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -22,6 +23,9 @@ class FinalScore : AppCompatActivity() {
         val finScoreText = findViewById<TextView>(R.id.finalScoreText)
         finScoreText.setText(intent.getStringExtra("Score"))
 
+        val rightAnswerText = findViewById<TextView>(R.id.rightAnswer)
+        rightAnswerText.text = "Right answer was " + intent.getStringExtra("Right Answer").toString()
+
         val newHS = findViewById<TextView>(R.id.newHighScore)
         if(intent.getStringExtra("Beat") == "true")
             newHS.setText("Congrats! You got a new high score!")
@@ -31,6 +35,7 @@ class FinalScore : AppCompatActivity() {
         introText.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
         finScoreText.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
         newHS.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
+        rightAnswerText.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
 
         when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> {

@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         val titleLetters = arrayListOf<TextView>(
             findViewById<TextView>(R.id.titleText1),
             findViewById<TextView>(R.id.titleText2),
@@ -43,7 +41,6 @@ class MainActivity : AppCompatActivity() {
             letter.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
             letter.setTextColor(getNewColor())
         }
-
 
         val easyGameButton = findViewById<Button>(R.id.easymodebutton)
         val hardGameButton = findViewById<Button>(R.id.hardmodebutton)

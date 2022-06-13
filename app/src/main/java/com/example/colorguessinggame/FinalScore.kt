@@ -2,6 +2,9 @@ package com.example.colorguessinggame
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -14,6 +17,8 @@ class FinalScore : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_final_score)
 
+        val introText = findViewById<TextView>(R.id.yourFinalScoreWas)
+
         val finScoreText = findViewById<TextView>(R.id.finalScoreText)
         finScoreText.setText(intent.getStringExtra("Score"))
 
@@ -23,6 +28,19 @@ class FinalScore : AppCompatActivity() {
         else
             newHS.isVisible = false
 
+        introText.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
+        finScoreText.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
+        newHS.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
+
+        when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                introText.setTextColor(Color.WHITE)
+                finScoreText.setTextColor(Color.WHITE)
+                newHS.setTextColor(Color.WHITE)
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {}
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {}
+        }
 
         val restart = findViewById<Button>(R.id.restartButton)
         restart.setOnClickListener{

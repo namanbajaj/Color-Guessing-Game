@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 
         val easyGameButton = findViewById<Button>(R.id.easymodebutton)
         val hardGameButton = findViewById<Button>(R.id.hardmodebutton)
+        val impossibleGameButton = findViewById<Button>(R.id.impossiblemodebutton)
+
         easyGameButton.setOnClickListener{
             val intent = Intent(this, GameScreen::class.java)
             intent.putExtra("Mode", "Easy")
@@ -52,6 +54,11 @@ class MainActivity : AppCompatActivity() {
         hardGameButton.setOnClickListener{
             val intent = Intent(this, GameScreen::class.java)
             intent.putExtra("Mode", "Hard")
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+        impossibleGameButton.setOnClickListener{
+            val intent = Intent(this, GameScreen::class.java)
+            intent.putExtra("Mode", "Impossible")
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
 

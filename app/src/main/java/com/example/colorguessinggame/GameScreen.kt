@@ -12,6 +12,9 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.collections.ArrayList
 import kotlin.math.abs
@@ -37,10 +40,13 @@ class GameScreen : AppCompatActivity() {
         val highScoreField = findViewById<TextView>(R.id.highScoreText)
         highScoreField.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
 
-        val highScoreFileName : String = if(mode == "Easy")
-            "UserScoreEasy.txt"
+        val highScoreFileName : String
+        if(mode == "Easy")
+            highScoreFileName = "UserScoreEasy.txt"
+        else if(mode == "Hard")
+            highScoreFileName = "UserScoreHard.txt"
         else
-            "UserScoreHard.txt"
+            highScoreFileName = "UserScoreImpossible.txt"
 
         val highScoreFile = File(this.filesDir, highScoreFileName)
 
@@ -49,6 +55,9 @@ class GameScreen : AppCompatActivity() {
         // if first time playing game
         if(!highScoreFile.exists()) {
             highScoreFile.createNewFile()
+            this.openFileOutput(highScoreFileName, Context.MODE_PRIVATE).use {
+                it.write("0".toByteArray())
+            }
             highScoreField.text = "High Score: 0"
         }
         else{
@@ -133,20 +142,12 @@ class GameScreen : AppCompatActivity() {
         val scoreField = findViewById<TextView>(R.id.scoreText)
         scoreField.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
 
-        // set colors for score and high score
-        when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
-            Configuration.UI_MODE_NIGHT_YES -> {
-                highScoreField.setTextColor(Color.WHITE)
-                scoreField.setTextColor(Color.WHITE)
-            }
-            Configuration.UI_MODE_NIGHT_NO -> {}
-            Configuration.UI_MODE_NIGHT_UNDEFINED -> {}
-        }
-
         // for debugging, set invisible for now
         val colorDebugText = findViewById<TextView>(R.id.colorDebug)
         colorDebugText.setText(rightChoice.toString())
         colorDebugText.isVisible = false
+
+        var timeLeft = 5
 
         option1.setOnClickListener{
             if(rightChoice == 1) {
@@ -154,6 +155,7 @@ class GameScreen : AppCompatActivity() {
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+                timeLeft = 6
             }
             else
                 gameOver(score, highScore, highScoreFileName)
@@ -168,6 +170,7 @@ class GameScreen : AppCompatActivity() {
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+                timeLeft = 6
             }
             else
                 gameOver(score, highScore, highScoreFileName)
@@ -182,6 +185,7 @@ class GameScreen : AppCompatActivity() {
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+                timeLeft = 6
             }
             else
                 gameOver(score, highScore, highScoreFileName)
@@ -196,12 +200,42 @@ class GameScreen : AppCompatActivity() {
                 scoreField.setText("Score: " + score.toString())
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+                timeLeft = 6
             }
             else
                 gameOver(score, highScore, highScoreFileName)
 
 //            Log.i("list of options", colors.toString())
             colorDebugText.setText(colorNames[colors[0]])
+        }
+
+        val timerField = findViewById<TextView>(R.id.timerText)
+        timerField.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
+        // timer stuff
+        if(mode == "Impossible"){
+            timerField.text = timeLeft.toString()
+            var job = lifecycleScope.launch {
+                while(true){
+                    delay(1000)
+                    timeLeft -= 1
+                    timerField.text = timeLeft.toString()
+                }
+            }
+            if(timeLeft == 0){
+                job.cancel()
+                gameOver(score, highScore, highScoreFileName)
+            }
+        }
+
+        // set colors for score and high score
+        when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                highScoreField.setTextColor(Color.WHITE)
+                scoreField.setTextColor(Color.WHITE)
+                timerField.setTextColor(Color.WHITE)
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {}
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {}
         }
     }
 

@@ -1,10 +1,14 @@
 package com.example.colorguessinggame
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
+import android.transition.Explode
+import android.transition.Slide
+import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 
         val titleLetters = arrayListOf<TextView>(
             findViewById<TextView>(R.id.titleText1),
@@ -44,12 +50,12 @@ class MainActivity : AppCompatActivity() {
         easyGameButton.setOnClickListener{
             val intent = Intent(this, GameScreen::class.java)
             intent.putExtra("Mode", "Easy")
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
         hardGameButton.setOnClickListener{
             val intent = Intent(this, GameScreen::class.java)
             intent.putExtra("Mode", "Hard")
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
 
         lifecycleScope.launch {

@@ -1,8 +1,11 @@
 package com.example.colorguessinggame
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -32,12 +35,12 @@ class GameScreen : AppCompatActivity() {
 
         // load high score
         val highScoreField = findViewById<TextView>(R.id.highScoreText)
+        highScoreField.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
 
-        val highScoreFileName : String
-        if(mode == "Easy")
-            highScoreFileName = "UserScoreEasy.txt"
+        val highScoreFileName : String = if(mode == "Easy")
+            "UserScoreEasy.txt"
         else
-            highScoreFileName = "UserScoreHard.txt"
+            "UserScoreHard.txt"
 
         val highScoreFile = File(this.filesDir, highScoreFileName)
 
@@ -46,7 +49,7 @@ class GameScreen : AppCompatActivity() {
         // if first time playing game
         if(!highScoreFile.exists()) {
             highScoreFile.createNewFile()
-            highScoreField.setText("High Score: 0")
+            highScoreField.text = "High Score: 0"
         }
         else{
             // read in from file
@@ -57,7 +60,7 @@ class GameScreen : AppCompatActivity() {
                 Log.i("from high score file", "LOADED: $text")
 
                 highScore = text.toInt()
-                highScoreField.setText("High Score: " + highScore.toString())
+                highScoreField.text = "High Score: " + highScore.toString()
             }
         }
 
@@ -128,6 +131,17 @@ class GameScreen : AppCompatActivity() {
 
         // changes as user gets right answers
         val scoreField = findViewById<TextView>(R.id.scoreText)
+        scoreField.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
+
+        // set colors for score and high score
+        when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                highScoreField.setTextColor(Color.WHITE)
+                scoreField.setTextColor(Color.WHITE)
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {}
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {}
+        }
 
         // for debugging, set invisible for now
         val colorDebugText = findViewById<TextView>(R.id.colorDebug)
@@ -135,53 +149,56 @@ class GameScreen : AppCompatActivity() {
         colorDebugText.isVisible = false
 
         option1.setOnClickListener{
-            if(rightChoice == 1)
+            if(rightChoice == 1) {
                 score = score + 1
+                scoreField.setText("Score: " + score.toString())
+                colors = oneGameLoop(colorValues, colorNames, square)
+                rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+            }
             else
                 gameOver(score, highScore, highScoreFileName)
 
-            scoreField.setText("Score: " + score.toString())
-            colors = oneGameLoop(colorValues, colorNames, square)
-            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
 
 //            Log.i("list of options", colors.toString())
             colorDebugText.setText(colorNames[colors[0]])
         }
         option2.setOnClickListener{
-            if(rightChoice == 2)
+            if(rightChoice == 2) {
                 score = score + 1
+                scoreField.setText("Score: " + score.toString())
+                colors = oneGameLoop(colorValues, colorNames, square)
+                rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+            }
             else
                 gameOver(score, highScore, highScoreFileName)
 
-            scoreField.setText("Score: " + score.toString())
-            colors = oneGameLoop(colorValues, colorNames, square)
-            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
 
 //            Log.i("list of options", colors.toString())
             colorDebugText.setText(colorNames[colors[0]])
         }
         option3.setOnClickListener{
-            if(rightChoice == 3)
+            if(rightChoice == 3) {
                 score = score + 1
+                scoreField.setText("Score: " + score.toString())
+                colors = oneGameLoop(colorValues, colorNames, square)
+                rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+            }
             else
                 gameOver(score, highScore, highScoreFileName)
 
-            scoreField.setText("Score: " + score.toString())
-            colors = oneGameLoop(colorValues, colorNames, square)
-            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
 
 //            Log.i("list of options", colors.toString())
             colorDebugText.setText(colorNames[colors[0]])
         }
         option4.setOnClickListener{
-            if(rightChoice == 4)
+            if(rightChoice == 4) {
                 score = score + 1
+                scoreField.setText("Score: " + score.toString())
+                colors = oneGameLoop(colorValues, colorNames, square)
+                rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
+            }
             else
                 gameOver(score, highScore, highScoreFileName)
-
-            scoreField.setText("Score: " + score.toString())
-            colors = oneGameLoop(colorValues, colorNames, square)
-            rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
 
 //            Log.i("list of options", colors.toString())
             colorDebugText.setText(colorNames[colors[0]])
@@ -211,7 +228,7 @@ class GameScreen : AppCompatActivity() {
         else
             intent.putExtra("Beat","false")
 
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     fun oneGameLoop(colorValues: ArrayList<Int>, colorNames: ArrayList<String>, square: Button): ArrayList<Int> {
@@ -302,6 +319,6 @@ class GameScreen : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java), ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }

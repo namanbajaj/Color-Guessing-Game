@@ -26,6 +26,16 @@ class FinalScore : AppCompatActivity() {
         val rightAnswerText = findViewById<TextView>(R.id.rightAnswer)
         rightAnswerText.text = "Right answer was " + intent.getStringExtra("Right Answer").toString()
 
+        val square = findViewById<TextView>(R.id.colorSquareFinal)
+        val rC = intent.getStringExtra("Right Color").toString()
+        if (rC != null) {
+            square.setBackgroundColor(rC.toInt())
+        }
+
+        if (rC != null) {
+            Log.i("Right Color", rC)
+        }
+
         val newHS = findViewById<TextView>(R.id.newHighScore)
         if(intent.getStringExtra("Beat") == "true")
             newHS.setText("Congrats! You got a new high score!")

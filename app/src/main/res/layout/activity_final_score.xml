@@ -6,10 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".FinalScore">
 
+    <Button
+        android:id="@+id/colorSquareFinal"
+        android:layout_width="204dp"
+        android:layout_height="119dp"
+        android:backgroundTint="#FFFFFF"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.62" />
+
     <TextView
         android:id="@+id/yourFinalScoreWas"
-        android:layout_width="403dp"
-        android:layout_height="158dp"
+        android:layout_width="388dp"
+        android:layout_height="53dp"
         android:text="Your Final Score was"
         android:textAlignment="center"
         android:textSize="34sp"
@@ -33,17 +46,6 @@
         app:layout_constraintTop_toBottomOf="@+id/yourFinalScoreWas"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
-        android:id="@+id/restartButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play Again"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finalScoreText"
-        app:layout_constraintVertical_bias="0.864" />
-
     <TextView
         android:id="@+id/newHighScore"
         android:layout_width="226dp"
@@ -56,7 +58,18 @@
         app:layout_constraintHorizontal_bias="0.513"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.801" />
+        app:layout_constraintVertical_bias="0.848" />
+
+    <Button
+        android:id="@+id/restartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play Again"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finalScoreText"
+        app:layout_constraintVertical_bias="0.925" />
 
     <TextView
         android:id="@+id/rightAnswer"
@@ -67,8 +80,8 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/newHighScore"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/finalScoreText"
-        app:layout_constraintVertical_bias="0.508" />
+        app:layout_constraintVertical_bias="0.299" />
 </androidx.constraintlayout.widget.ConstraintLayout>

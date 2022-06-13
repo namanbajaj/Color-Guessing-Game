@@ -23,6 +23,7 @@ import kotlin.math.abs
 class GameScreen : AppCompatActivity() {
 
     lateinit var rightAnswertoSend : String
+    lateinit var closestColorVal: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_screen)
@@ -265,6 +266,7 @@ class GameScreen : AppCompatActivity() {
         val intent = Intent(this, FinalScore::class.java)
         intent.putExtra("Score", curScore.toString())
         intent.putExtra("Right Answer", rightAnswertoSend)
+        intent.putExtra("Right Color", closestColorVal.toString())
 
         if(curScore > highScore){
             this.openFileOutput(highScoreFileName, Context.MODE_PRIVATE).use {
@@ -286,6 +288,7 @@ class GameScreen : AppCompatActivity() {
         var closestVal = colorValues.closestValue(newCol)
         if (closestVal != null) {
             square.setBackgroundColor(closestVal)
+            closestColorVal = closestVal.toString()
         }
 //        Log.i("Check for nearest", "old val: $newCol closest val: $closestVal")
 

@@ -371,6 +371,6 @@ class GameScreen : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java), ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+//        startActivity(Intent(this, MainActivity::class.java), ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }

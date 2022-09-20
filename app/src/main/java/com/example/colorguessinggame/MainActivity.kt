@@ -4,19 +4,17 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.transition.Explode
-import android.transition.Slide
-import android.view.Window
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var job : Job
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,40 +40,52 @@ class MainActivity : AppCompatActivity() {
             letter.setTextColor(getNewColor())
         }
 
+        job = GlobalScope.launch(Dispatchers.IO) {
+            while(true) {
+                delay(500)
+                withContext(Dispatchers.Main) {
+                    for(letter in titleLetters) {
+                        letter.setTextColor(getNewColor())
+                    }
+                }
+//                Log.i("Color", "Color changed")
+            }
+        }
+
         val easyGameButton = findViewById<Button>(R.id.easymodebutton)
         val hardGameButton = findViewById<Button>(R.id.hardmodebutton)
         val impossibleGameButton = findViewById<Button>(R.id.impossiblemodebutton)
 
         easyGameButton.setOnClickListener{
-            val intent = Intent(this, GameScreen::class.java)
-            intent.putExtra("Mode", "Easy")
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startNewActivity("Easy")
         }
         hardGameButton.setOnClickListener{
-            val intent = Intent(this, GameScreen::class.java)
-            intent.putExtra("Mode", "Hard")
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startNewActivity("Hard")
         }
         impossibleGameButton.setOnClickListener{
-            val intent = Intent(this, GameScreen::class.java)
-            intent.putExtra("Mode", "Impossible")
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startNewActivity("Impossible")
         }
 
-        lifecycleScope.launch {
-            while(true){
-                delay(500)
-                for(letter in titleLetters)
-                    letter.setTextColor(getNewColor())
-            }
+        val privacypolicy = findViewById<TextView>(R.id.privacypolicybutton)
+        privacypolicy.setOnClickListener{
+            val intent = Intent(android.content.Intent.ACTION_VIEW)
+            intent.data = Uri.parse("https://sites.google.com/view/guess-the-color-privacy-policy/home")
+            startActivity(intent)
         }
     }
 
-    fun getNewColor() : Int {
+    private fun getNewColor(): Int {
         var red = (0..255).random()
         var green = (0..255).random()
         var blue = (0..255).random()
-        var color = Color.rgb(red, green, blue)
-        return color
+        return Color.rgb(red, green, blue)
     }
+
+    private fun startNewActivity(mode : String) {
+        val intent = Intent(this, GameScreen::class.java)
+        intent.putExtra("Mode", mode)
+        job.cancel()
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+    }
+
 }

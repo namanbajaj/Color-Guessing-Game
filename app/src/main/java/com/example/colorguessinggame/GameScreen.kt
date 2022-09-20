@@ -1,5 +1,6 @@
 package com.example.colorguessinggame
 
+import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
@@ -21,9 +22,10 @@ import kotlin.math.abs
 
 
 class GameScreen : AppCompatActivity() {
-
     lateinit var rightAnswertoSend : String
     lateinit var closestColorVal: String
+
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_screen)
@@ -42,13 +44,11 @@ class GameScreen : AppCompatActivity() {
         val highScoreField = findViewById<TextView>(R.id.highScoreText)
         highScoreField.typeface = Typeface.createFromAsset(assets, "crayons.ttf")
 
-        val highScoreFileName : String
-        if(mode == "Easy")
-            highScoreFileName = "UserScoreEasy.txt"
-        else if(mode == "Hard")
-            highScoreFileName = "UserScoreHard.txt"
-        else
-            highScoreFileName = "UserScoreImpossible.txt"
+        val highScoreFileName : String = when (mode) {
+            "Easy" -> "UserScoreEasy.txt"
+            "Hard" -> "UserScoreHard.txt"
+            else -> "UserScoreImpossible.txt"
+        }
 
         val highScoreFile = File(this.filesDir, highScoreFileName)
 
@@ -71,7 +71,7 @@ class GameScreen : AppCompatActivity() {
                 Log.i("from high score file", "LOADED: $text")
 
                 highScore = text.toInt()
-                highScoreField.text = "High Score: " + highScore.toString()
+                highScoreField.text = "High Score: $highScore"
             }
         }
 
@@ -156,7 +156,7 @@ class GameScreen : AppCompatActivity() {
         option1.setOnClickListener{
             if(rightChoice == 1) {
                 score += 1
-                scoreField.setText("Score: " + score.toString())
+                scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
@@ -168,12 +168,12 @@ class GameScreen : AppCompatActivity() {
 
 
 //            Log.i("list of options", colors.toString())
-            colorDebugText.setText(colorNames[colors[0]])
+            colorDebugText.text = colorNames[colors[0]]
         }
         option2.setOnClickListener{
             if(rightChoice == 2) {
                 score += 1
-                scoreField.setText("Score: " + score.toString())
+                scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
@@ -190,7 +190,7 @@ class GameScreen : AppCompatActivity() {
         option3.setOnClickListener{
             if(rightChoice == 3) {
                 score += 1
-                scoreField.setText("Score: " + score.toString())
+                scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
@@ -202,12 +202,12 @@ class GameScreen : AppCompatActivity() {
 
 
 //            Log.i("list of options", colors.toString())
-            colorDebugText.setText(colorNames[colors[0]])
+            colorDebugText.text = colorNames[colors[0]]
         }
         option4.setOnClickListener{
             if(rightChoice == 4) {
                 score += 1
-                scoreField.setText("Score: " + score.toString())
+                scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
                 rightChoice = setOptions(option1, option2, option3, option4, colorNames, colors)
                 timeLeft = 6
@@ -218,7 +218,7 @@ class GameScreen : AppCompatActivity() {
             }
 
 //            Log.i("list of options", colors.toString())
-            colorDebugText.setText(colorNames[colors[0]])
+            colorDebugText.text = colorNames[colors[0]]
         }
 
         val timerField = findViewById<TextView>(R.id.timerText)
@@ -253,16 +253,14 @@ class GameScreen : AppCompatActivity() {
         }
     }
 
-    fun getNewColor() : Int {
+    private fun getNewColor(): Int {
         var red = (0..255).random()
         var green = (0..255).random()
         var blue = (0..255).random()
-        var color = Color.rgb(red, green, blue)
-//        Log.i("COLORS", color.toString())
-        return color
+        return Color.rgb(red, green, blue)
     }
 
-    fun gameOver(curScore: Int, highScore: Int, highScoreFileName: String) {
+    private fun gameOver(curScore: Int, highScore: Int, highScoreFileName: String) {
         val intent = Intent(this, FinalScore::class.java)
         intent.putExtra("Score", curScore.toString())
         intent.putExtra("Right Answer", rightAnswertoSend)
@@ -281,7 +279,7 @@ class GameScreen : AppCompatActivity() {
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-    fun oneGameLoop(colorValues: ArrayList<Int>, colorNames: ArrayList<String>, square: Button): ArrayList<Int> {
+    private fun oneGameLoop(colorValues: ArrayList<Int>, colorNames: ArrayList<String>, square: Button): ArrayList<Int> {
         fun List<Int>.closestValue(value: Int) = minByOrNull { abs(value - it) }
 
         var newCol = getNewColor()
@@ -328,7 +326,7 @@ class GameScreen : AppCompatActivity() {
     }
 
     // set option choices to new colors
-    fun setOptions(
+    private fun setOptions(
         option1: Button,
         option2: Button,
         option3: Button,
@@ -339,34 +337,33 @@ class GameScreen : AppCompatActivity() {
         var rightChoice = (1..4).random()
         when(rightChoice) {
             1 -> {
-                option1.setText(colorNames[colors[0]])
-                option2.setText(colorNames[colors[1]])
-                option3.setText(colorNames[colors[2]])
-                option4.setText(colorNames[colors[3]])
+                option1.text = colorNames[colors[0]]
+                option2.text = colorNames[colors[1]]
+                option3.text = colorNames[colors[2]]
+                option4.text = colorNames[colors[3]]
             }
 
             2 -> {
-                option1.setText(colorNames[colors[3]])
-                option2.setText(colorNames[colors[0]])
-                option3.setText(colorNames[colors[1]])
-                option4.setText(colorNames[colors[2]])
+                option1.text = colorNames[colors[3]]
+                option2.text = colorNames[colors[0]]
+                option3.text = colorNames[colors[1]]
+                option4.text = colorNames[colors[2]]
             }
 
             3 -> {
-                option1.setText(colorNames[colors[2]])
-                option2.setText(colorNames[colors[3]])
-                option3.setText(colorNames[colors[0]])
-                option4.setText(colorNames[colors[1]])
+                option1.text = colorNames[colors[2]]
+                option2.text = colorNames[colors[3]]
+                option3.text = colorNames[colors[0]]
+                option4.text = colorNames[colors[1]]
             }
 
             4 -> {
-                option1.setText(colorNames[colors[1]])
-                option2.setText(colorNames[colors[2]])
-                option3.setText(colorNames[colors[3]])
-                option4.setText(colorNames[colors[0]])
+                option1.text = colorNames[colors[1]]
+                option2.text = colorNames[colors[2]]
+                option3.text = colorNames[colors[3]]
+                option4.text = colorNames[colors[0]]
             }
         }
-
         return rightChoice
     }
 

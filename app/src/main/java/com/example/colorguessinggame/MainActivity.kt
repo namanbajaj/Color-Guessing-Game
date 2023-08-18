@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -56,18 +57,22 @@ class MainActivity : AppCompatActivity() {
         val hardGameButton = findViewById<Button>(R.id.hardmodebutton)
         val impossibleGameButton = findViewById<Button>(R.id.impossiblemodebutton)
 
-        easyGameButton.setOnClickListener{
+        easyGameButton.setOnClickListener{ view ->
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             startNewActivity("Easy")
         }
-        hardGameButton.setOnClickListener{
+        hardGameButton.setOnClickListener{ view ->
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             startNewActivity("Hard")
         }
-        impossibleGameButton.setOnClickListener{
+        impossibleGameButton.setOnClickListener{ view ->
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             startNewActivity("Impossible")
         }
 
         val privacypolicy = findViewById<TextView>(R.id.privacypolicybutton)
-        privacypolicy.setOnClickListener{
+        privacypolicy.setOnClickListener{ view ->
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             val intent = Intent(android.content.Intent.ACTION_VIEW)
             intent.data = Uri.parse("https://sites.google.com/view/guess-the-color-privacy-policy/home")
             startActivity(intent)

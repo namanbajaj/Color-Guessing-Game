@@ -9,11 +9,14 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -24,6 +27,8 @@ import kotlin.math.abs
 class GameScreen : AppCompatActivity() {
     lateinit var rightAnswertoSend : String
     lateinit var closestColorVal: String
+
+    private lateinit var job : Job
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,8 +158,9 @@ class GameScreen : AppCompatActivity() {
 
         var wrongAnswerPressed = false
 
-        option1.setOnClickListener{
+        option1.setOnClickListener{ view ->
             if(rightChoice == 1) {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
                 score += 1
                 scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
@@ -162,6 +168,7 @@ class GameScreen : AppCompatActivity() {
                 timeLeft = 6
             }
             else {
+                view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                 gameOver(score, highScore, highScoreFileName)
                 wrongAnswerPressed = true
             }
@@ -170,8 +177,9 @@ class GameScreen : AppCompatActivity() {
 //            Log.i("list of options", colors.toString())
             colorDebugText.text = colorNames[colors[0]]
         }
-        option2.setOnClickListener{
+        option2.setOnClickListener{ view ->
             if(rightChoice == 2) {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
                 score += 1
                 scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
@@ -179,6 +187,7 @@ class GameScreen : AppCompatActivity() {
                 timeLeft = 6
             }
             else {
+                view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                 gameOver(score, highScore, highScoreFileName)
                 wrongAnswerPressed = true
             }
@@ -187,8 +196,9 @@ class GameScreen : AppCompatActivity() {
 //            Log.i("list of options", colors.toString())
             colorDebugText.setText(colorNames[colors[0]])
         }
-        option3.setOnClickListener{
+        option3.setOnClickListener{ view ->
             if(rightChoice == 3) {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
                 score += 1
                 scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
@@ -196,6 +206,7 @@ class GameScreen : AppCompatActivity() {
                 timeLeft = 6
             }
             else {
+                view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                 gameOver(score, highScore, highScoreFileName)
                 wrongAnswerPressed = true
             }
@@ -204,8 +215,9 @@ class GameScreen : AppCompatActivity() {
 //            Log.i("list of options", colors.toString())
             colorDebugText.text = colorNames[colors[0]]
         }
-        option4.setOnClickListener{
+        option4.setOnClickListener{ view ->
             if(rightChoice == 4) {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
                 score += 1
                 scoreField.text = "Score: $score"
                 colors = oneGameLoop(colorValues, colorNames, square)
@@ -213,6 +225,7 @@ class GameScreen : AppCompatActivity() {
                 timeLeft = 6
             }
             else {
+                view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                 gameOver(score, highScore, highScoreFileName)
                 wrongAnswerPressed = true
             }
@@ -226,10 +239,11 @@ class GameScreen : AppCompatActivity() {
         // timer stuff
         if(mode == "Impossible"){
             timerField.text = timeLeft.toString()
-            var job = lifecycleScope.launch {
+            job = lifecycleScope.launch {
                 var timerValid = true
                 while(timerValid){
                     delay(1000)
+                    this@GameScreen.findViewById<ConstraintLayout>(R.id.gamescreenlayout).performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     timeLeft -= 1
                     timerField.text = timeLeft.toString()
                     if(timeLeft == 0 && !wrongAnswerPressed) {
@@ -275,6 +289,9 @@ class GameScreen : AppCompatActivity() {
 
         else
             intent.putExtra("Beat","false")
+
+        if(highScoreFileName == "UserScoreImpossible.txt")
+            job.cancel()
 
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }

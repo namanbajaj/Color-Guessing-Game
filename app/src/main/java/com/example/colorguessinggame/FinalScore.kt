@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -58,7 +59,8 @@ class FinalScore : AppCompatActivity() {
         }
 
         val restart = findViewById<Button>(R.id.restartButton)
-        restart.setOnClickListener{
+        restart.setOnClickListener{ view ->
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             startActivity(Intent(this, MainActivity::class.java), ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }

@@ -77,12 +77,16 @@ class MainActivity : AppCompatActivity() {
             intent.data = Uri.parse("https://sites.google.com/view/guess-the-color-privacy-policy/home")
             startActivity(intent)
         }
+        val darkModeEnabledOnDevice = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        if(darkModeEnabledOnDevice) {
+            privacypolicy.setTextColor(Color.WHITE)
+        }
     }
 
     private fun getNewColor(): Int {
-        var red = (0..255).random()
-        var green = (0..255).random()
-        var blue = (0..255).random()
+        val red = (0..255).random()
+        val green = (0..255).random()
+        val blue = (0..255).random()
         return Color.rgb(red, green, blue)
     }
 

@@ -29,11 +29,11 @@ class FinalScore : AppCompatActivity() {
 
         val square = findViewById<TextView>(R.id.colorSquareFinal)
         val rC = intent.getStringExtra("Right Color").toString()
-        if (rC != null) {
+        if (rC != "") {
             square.setBackgroundColor(rC.toInt())
         }
 
-        if (rC != null) {
+        if (rC != "") {
             Log.i("Right Color", rC)
         }
 
